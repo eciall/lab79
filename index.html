@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OPERATIE ATLAS — Police Briefing</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════
+   THEME TOKENS
+══════════════════════════════════════════ */
+:root {
+  --bg:         #080b10;
+  --surface:    #0d1118;
+  --surface2:   #111820;
+  --border:     #1c2535;
+  --borderF:    #151e2c;
+  --text:       #b8c8d8;
+  --textH:      #d0dce8;
+  --muted:      #5a7088;
+  --faint:      #2a3a4a;
+  --accent:     #1a6abf;
+  --accentBr:   #2a88f0;
+  --accentDim:  rgba(26,106,191,0.14);
+  --red:        #c03020;
+  --redDim:     rgba(192,48,32,0.15);
+  --amber:      #c08020;
+  --amberDim:   rgba(192,128,32,0.13);
+  --green:      #1a7040;
+  --greenBr:    #22a060;
+  --greenDim:   rgba(26,112,64,0.15);
+  --gold:       #c8a030;
+  --goldDim:    rgba(200,160,48,0.13);
+  --font:       'Barlow Condensed', sans-serif;
+  --mono:       'Share Tech Mono', monospace;
+  --sb:         #0a0e14;
+}
+[data-theme="light"] {
+  --bg:         #e8ecf0;
+  --surface:    #f2f4f7;
+  --surface2:   #eaecf0;
+  --border:     #c0c8d4;
+  --borderF:    #d0d8e0;
+  --text:       #2a3a50;
+  --textH:      #101828;
+  --muted:      #607080;
+  --faint:      #a0b0c0;
+  --accent:     #1a6abf;
+  --accentBr:   #1050a0;
+  --accentDim:  rgba(26,106,191,0.10);
+  --red:        #a02010;
+  --redDim:     rgba(160,32,16,0.10);
+  --amber:      #906010;
+  --amberDim:   rgba(144,96,16,0.10);
+  --green:      #156030;
+  --greenBr:    #18803c;
+  --greenDim:   rgba(21,96,48,0.10);
+  --gold:       #a07820;
+  --goldDim:    rgba(160,120,32,0.10);
+  --sb:         #e0e4ea;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font)}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--faint)}
+*{scrollbar-width:thin;scrollbar-color:var(--faint) transparent}
+
+/* ══ LAYOUT ══ */
+.app{display:flex;flex-direction:column;min-height:100vh}
+.body{display:flex;flex:1;overflow:hidden;min-height:0}
+.main{flex:1;padding:20px 24px;overflow-y:auto;border-right:1px solid var(--border)}
+.sidebar{width:286px;flex-shrink:0;padding:18px 16px;background:var(--sb);overflow-y:auto}
+
+/* ══ HEADER ══ */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 24px 0;flex-shrink:0}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;gap:10px}
+.header-title{font-size:26px;font-weight:700;letter-spacing:3px;color:var(--textH);text-transform:uppercase;line-height:1}
+.header-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:1.5px;margin-top:4px}
+.header-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.header-right .type{font-family:var(--mono);font-size:11px;color:var(--accentBr);letter-spacing:1px}
+.header-right .date{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.header-right .locs{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.tabs-row{display:flex;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:2px}
+.tab-btn{font-family:var(--font);font-size:13px;font-weight:600;letter-spacing:2px;padding:7px 18px;background:transparent;border:none;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;text-transform:uppercase;transition:color .15s,border-color .15s,background .15s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{background:var(--accentDim);border-bottom-color:var(--accentBr);color:var(--textH)}
+
+/* ══ THEME TOGGLE ══ */
+.theme-toggle{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:6px;transition:all .2s;white-space:nowrap}
+.theme-toggle:hover{border-color:var(--accent);color:var(--text)}
+.theme-toggle .icon{font-size:13px}
+
+/* ══ PANELS ══ */
+.panel{display:none}
+.panel.active{display:block}
+
+/* ══ CARDS ══ */
+.card{background:var(--surface);border:1px solid var(--borderF);padding:14px;margin-bottom:12px;transition:border-color .15s}
+.card:hover{border-color:var(--border)}
+
+/* ══ BRIEFING ══ */
+.loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.loc-mini{background:var(--surface);border:1px solid var(--border);padding:10px 14px}
+.lm-tag{font-family:var(--mono);font-size:9px;letter-spacing:2px;margin-bottom:4px}
+.lm-addr{font-size:13px;font-weight:600;color:var(--textH)}
+.lm-team{font-family:var(--mono);font-size:9px;color:var(--faint);margin-top:4px;letter-spacing:1px}
+.divider{height:1px;background:linear-gradient(to right,var(--accent),transparent);margin-bottom:18px;opacity:.4}
+.brief-label{font-family:var(--mono);font-size:10px;letter-spacing:2px;color:var(--muted);margin-bottom:12px}
+.brief-para{font-family:var(--mono);font-size:11px;line-height:1.9;color:var(--muted);margin-bottom:16px}
+
+/* ══ SUSPECTS ══ */
+.susp-badges{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.badge{font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:2px;padding:2px 8px;border:1px solid}
+.susp-avatar{width:50px;height:50px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;color:var(--muted);flex-shrink:0}
+.susp-row{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.susp-name{font-size:20px;font-weight:700;letter-spacing:2px;color:var(--textH);text-transform:uppercase}
+.susp-alias{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.susp-loc{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:1px;margin-top:3px}
+.susp-veh-label{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:1px;margin-bottom:2px}
+.susp-veh{font-size:14px;font-weight:600;color:var(--accentBr);letter-spacing:1px;margin-bottom:10px}
+.susp-desc{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.prior-head{font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:2px;color:var(--faint);margin-bottom:6px;text-transform:uppercase}
+.prior-item{font-family:var(--mono);font-size:10px;color:var(--faint);padding:2px 0 2px 10px;border-left:2px solid var(--borderF);margin-bottom:3px}
+.armed-warn{font-family:var(--font);font-size:12px;font-weight:700;letter-spacing:2px;color:var(--red);margin-top:12px}
+
+/* ══ LOCATIONS ══ */
+.loc-sel{display:flex;gap:8px;margin-bottom:18px}
+.loc-sel-btn{font-family:var(--font);font-size:13px;font-weight:700;letter-spacing:2px;padding:8px 20px;background:transparent;border:1px solid var(--border);color:var(--muted);text-transform:uppercase;cursor:pointer;line-height:1.3;transition:all .15s}
+.loc-sel-btn:hover{border-color:var(--accent)}
+.loc-sel-btn.active{background:var(--accentDim);border-color:var(--accentBr);color:var(--textH)}
+.loc-sel-btn span{font-family:var(--mono);font-size:9px;letter-spacing:1px;display:block;margin-top:2px}
+.addr-bar{background:var(--surface);border:1px solid var(--border);border-top:none;padding:8px 14px;display:flex;justify-content:space-between;margin-bottom:18px}
+.addr-bar .addr{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:1px}
+.addr-bar .coords{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.detail-label{font-family:var(--mono);font-size:9px;letter-spacing:2px;margin-bottom:6px}
+.detail-text{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.75}
+.sat-head{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--accent);margin-bottom:8px}
+.sat-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px}
+.sat-arrow{color:var(--accentBr);font-size:9px;margin-top:2px;flex-shrink:0}
+.sat-text{font-family:var(--mono);font-size:10px;color:var(--text);line-height:1.6}
+svg.scene{display:block;width:100%}
+
+/* ══ LEGEND ══ */
+.map-legend{background:var(--surface);border:1px solid var(--borderF);border-top:none;padding:8px 14px;display:flex;flex-wrap:wrap;gap:12px;margin-bottom:6px}
+.leg-item{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* ══ SURVEILLANCE ══ */
+.surv-label{font-size:13px;letter-spacing:2px;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+.surv-sub{font-family:var(--mono);font-size:10px;color:var(--faint);margin-bottom:16px}
+.surv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.surv-feed{background:var(--surface);border:1px solid var(--borderF);aspect-ratio:16/6;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.surv-nofeed{font-family:var(--mono);font-size:10px;color:var(--borderF);letter-spacing:2px;margin-bottom:5px}
+.surv-feedlabel{font-family:var(--mono);font-size:8px;color:var(--faint);letter-spacing:1px;text-align:center;padding:0 8px}
+.surv-rec{position:absolute;top:6px;left:8px;font-family:var(--mono);font-size:7px;color:var(--faint)}
+.surv-ts{position:absolute;bottom:6px;right:8px;font-family:var(--mono);font-size:7px;color:var(--faint)}
+
+/* ══ SIDEBAR ══ */
+.sb-title{font-size:18px;font-weight:700;letter-spacing:3px;color:var(--textH);text-transform:uppercase;margin-bottom:8px}
+.sb-divider{height:1px;background:linear-gradient(to right,var(--accentBr),transparent);margin-bottom:12px}
+.sb-badge-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sb-badge{font-size:12px;font-weight:700;letter-spacing:2px;background:var(--accent);color:#fff;padding:3px 10px;text-transform:uppercase}
+.sb-count{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.progress-track{height:2px;background:var(--surface2);margin-bottom:16px}
+.progress-fill{height:100%;background:var(--accentBr);transition:width .3s}
+
+/* ══ OBJECTIVES — Ready or Not style ══ */
+.obj-section-head{font-family:var(--mono);font-size:9px;letter-spacing:2px;color:var(--faint);margin:14px 0 6px;text-transform:uppercase}
+.obj-item{margin-bottom:2px;cursor:pointer;user-select:none}
+.obj-inner{display:flex;align-items:stretch;gap:0;border:1px solid var(--borderF);background:var(--surface);transition:border-color .15s,background .15s}
+.obj-item:hover .obj-inner{border-color:var(--border);background:var(--surface2)}
+.obj-stripe{width:4px;flex-shrink:0;background:var(--faint);transition:background .2s}
+.obj-stripe.primary{background:var(--gold)}
+.obj-stripe.secondary{background:var(--accent)}
+.obj-stripe.bonus{background:var(--greenBr)}
+.obj-stripe.done-stripe{background:var(--greenBr)!important}
+.obj-body{flex:1;padding:8px 10px}
+.obj-type{font-family:var(--mono);font-size:8px;letter-spacing:2px;color:var(--faint);margin-bottom:2px;text-transform:uppercase}
+.obj-type.primary{color:var(--gold)}
+.obj-type.secondary{color:var(--accentBr)}
+.obj-type.bonus{color:var(--greenBr)}
+.obj-title{font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--textH);line-height:1.2;transition:color .2s}
+.obj-title.done{color:var(--greenBr)!important}
+.obj-desc{font-family:var(--mono);font-size:9px;color:var(--faint);margin-top:3px;line-height:1.5}
+.obj-check{width:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--borderF);transition:color .2s}
+.obj-check.done{color:var(--greenBr)}
+
+/* ══ SIDEBAR META / WARN ══ */
+.sb-hr{height:1px;background:var(--borderF);margin-bottom:12px}
+.sb-meta{font-family:var(--mono);font-size:10px;color:var(--faint);line-height:2}
+.sb-meta-row{display:flex;justify-content:space-between}
+.sb-meta-val{color:var(--muted)}
+.warn-box{margin-top:12px;padding:10px 12px}
+.warn-head{font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:4px}
+.warn-text{font-family:var(--mono);font-size:9px;line-height:1.6}
+
+/* ══ FOOTER ══ */
+.footer{background:var(--surface);border-top:1px solid var(--borderF);padding:9px 24px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.footer-dept{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:1.5px}
+.footer-class{font-size:12px;font-weight:700;letter-spacing:2px;background:var(--accent);color:#fff;padding:3px 12px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">OPERATIE ATLAS</div>
+      <div class="header-sub">Police Operation Order — Narcotics — 04 APR 2025</div>
+    </div>
+    <div class="header-right">
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <span class="icon" id="theme-icon">☀</span>
+        <span id="theme-label">LIGHT MODE</span>
+      </button>
+      <div class="type">NARCOTICS ENTRY</div>
+      <div class="date">04 APR 2025 · H-HOUR: 19:00</div>
+      <div class="locs">2 LOCATIONS · SIMULTANEOUS</div>
+    </div>
+  </div>
+  <div class="tabs-row">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('brief',this)">MISSION BRIEF</button>
+      <button class="tab-btn" onclick="showTab('suspects',this)">SUSPECTS</button>
+      <button class="tab-btn" onclick="showTab('locations',this)">LOCATIONS</button>
+      <button class="tab-btn" onclick="showTab('surveillance',this)">SURVEILLANCE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BODY ══ -->
+<div class="body">
+<div class="main">
+
+<!-- ── MISSION BRIEF ── -->
+<div id="panel-brief" class="panel active">
+  <div class="loc-grid">
+    <div class="loc-mini"><div class="lm-tag" style="color:var(--accent)">ALPHA — RESIDENTIAL</div><div class="lm-addr">Kronenburgsingel 2, Arnhem</div><div class="lm-team">TEAM ALPHA · H-HOUR 19:00</div></div>
+    <div class="loc-mini"><div class="lm-tag" style="color:var(--red)">BRAVO — WAREHOUSE</div><div class="lm-addr">Westervoortsedijk 73, Arnhem</div><div class="lm-team">TEAM BRAVO · H-HOUR 19:00</div></div>
+  </div>
+  <div class="divider"></div>
+  <div class="brief-label">OPERATIONAL BRIEFING — INCIDENT COMMANDER</div>
+  <p class="brief-para">INCIDENT COMMANDER: Attention all units. Operation Atlas targets a two-person narcotics distribution network operating between a residential address at Kronenburgsingel 2, Arnhem and a business premises at Westervoortsedijk 73, Arnhem-Noord (Lorentz Bedrijvenpark). Intelligence gathered over six weeks of surveillance indicates regular movement of suspected controlled substances between the two locations, primarily between 17:00 and 21:00.</p>
+  <p class="brief-para">Both suspects have been observed alternating between the warehouse and the residence multiple times per week. On at least four occasions, vehicles — blue VW Transporter, kenteken GH-214-R; silver BMW 520d, kenteken ZN-486-H — were tracked moving directly between the two addresses within 30 minutes. Packages consistent in size with bulk narcotics packaging were observed during two vehicle stops.</p>
+  <p class="brief-para">Intelligence Assessment: The warehouse unit (Unit 14, Westervoortsedijk 73) is rented under a shell company — Sven Houben is listed as contact. The property has two large roller doors, one loading bay, external CCTV facing the access road, and a side personnel door. The Kronenburgsingel address is a ground-floor apartment in a 4-storey residential block. Suspect ALPHA occupies the rear unit. There is a shared entrance with intercom and a rear courtyard exit.</p>
+  <p class="brief-para">Rules of Engagement: Both suspects are considered potentially armed. One firearm has been associated with Sven Houben from a prior arrest. Non-lethal force is preferred. Lethal force is authorised only in case of direct threat to officer or civilian safety. Neutralise CCTV at the warehouse approach before breach. Announce clearly: POLITIE — DEUREN OPEN.</p>
+</div>
+
+<!-- ── SUSPECTS ── -->
+<div id="panel-suspects" class="panel">
+  <div class="card" style="position:relative">
+    <div class="susp-badges">
+      <div class="badge" style="color:var(--amber);border-color:var(--amber);background:var(--amberDim)">THREAT: MEDIUM</div>
+      <div class="badge" style="color:var(--green);border-color:var(--green);background:var(--greenDim);font-size:9px">ARMED — UNCONFIRMED</div>
+    </div>
+    <div class="susp-row">
+      <div class="susp-avatar">DV</div>
+      <div>
+        <div class="susp-name">DAAN VERHOEVEN</div>
+        <div class="susp-alias">AKA "D / De Kat" · AGE 31</div>
+        <div class="susp-loc">RESIDENTIAL — KRONENBURGSINGEL</div>
+      </div>
+    </div>
+    <div class="susp-veh-label">ASSOCIATED VEHICLE</div>
+    <div class="susp-veh">Silver BMW 520d · ZN-486-H</div>
+    <p class="susp-desc">Primary distribution coordinator. Manages client contacts and logistics. Known to operate from the Kronenburgsingel apartment. No confirmed firearms but has used a knife in a prior altercation. Expect verbal resistance.</p>
+    <div class="prior-head">Prior Offenses</div>
+    <div class="prior-item">Drugs possession (2019)</div>
+    <div class="prior-item">Drugs trafficking (2021)</div>
+    <div class="prior-item">Resisting arrest (2022)</div>
+  </div>
+  <div class="card" style="position:relative">
+    <div class="susp-badges">
+      <div class="badge" style="color:var(--red);border-color:var(--red);background:var(--redDim)">THREAT: HIGH</div>
+      <div class="badge" style="color:var(--red);border-color:var(--red);background:var(--redDim);font-size:9px">ARMED — CONFIRMED</div>
+    </div>
+    <div class="susp-row">
+      <div class="susp-avatar">SH</div>
+      <div>
+        <div class="susp-name">SVEN HOUBEN</div>
+        <div class="susp-alias">AKA "Sven / De Hond" · AGE 38</div>
+        <div class="susp-loc">BUSINESS — WESTERVOORTSEDIJK</div>
+      </div>
+    </div>
+    <div class="susp-veh-label">ASSOCIATED VEHICLE</div>
+    <div class="susp-veh">Blue VW Transporter · GH-214-R</div>
+    <p class="susp-desc">Logistics and storage. Controls the warehouse unit. Previously arrested in possession of a Glock 17. Hostile history with law enforcement — consider armed until confirmed otherwise. May flee via rear access road toward the river.</p>
+    <div class="prior-head">Prior Offenses</div>
+    <div class="prior-item">Drugs trafficking (2017)</div>
+    <div class="prior-item">Illegal firearm possession (2020)</div>
+    <div class="prior-item">Assault LEO (2021)</div>
+    <div class="armed-warn">⚠ CONSIDER ARMED — APPROACH WITH EXTREME CAUTION</div>
+  </div>
+</div>
+
+<!-- ── LOCATIONS ── -->
+<div id="panel-locations" class="panel">
+  <div class="loc-sel">
+    <button class="loc-sel-btn active" id="locbtn-0" onclick="showLoc(0)">TEAM ALPHA<span>RESIDENTIAL</span></button>
+    <button class="loc-sel-btn" id="locbtn-1" onclick="showLoc(1)">TEAM BRAVO<span>WAREHOUSE</span></button>
+  </div>
+
+  <!-- ── LOC 0: RESIDENTIAL ── -->
+  <div id="loc-panel-0">
+    <!-- FLOORPLAN: RESIDENTIAL BLOCK -->
+    <svg class="scene" viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg">
+      <!-- bg -->
+      <rect width="760" height="420" fill="#0a0d12"/>
+      <!-- street / surroundings -->
+      <rect x="0" y="0" width="760" height="420" fill="#0c0f14"/>
+      <!-- Kronenburgpark (staging area) -->
+      <rect x="20" y="240" width="130" height="90" rx="4" fill="#0d1a0d" stroke="#1a3a1a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="85" y="278" text-anchor="middle" font-family="monospace" font-size="9" fill="#1e4a1e" letter-spacing="1">KRONENBURG</text>
+      <text x="85" y="291" text-anchor="middle" font-family="monospace" font-size="9" fill="#1e4a1e" letter-spacing="1">PARK</text>
+      <!-- road Kronenburgsingel -->
+      <rect x="170" y="0" width="420" height="420" fill="#0b0e13"/>
+      <rect x="165" y="190" width="430" height="26" fill="#0e1118"/>
+      <rect x="300" y="196" width="50" height="4" rx="2" fill="#181e28"/>
+      <rect x="400" y="196" width="50" height="4" rx="2" fill="#181e28"/>
+      <text x="395" y="222" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a2030" letter-spacing="2">KRONENBURGSINGEL</text>
+      <!-- APARTMENT BLOCK — main body -->
+      <rect x="200" y="40" width="340" height="148" rx="2" fill="#111822" stroke="#2a3848" stroke-width="2"/>
+      <!-- Floor dividers inside block -->
+      <line x1="200" y1="87" x2="540" y2="87" stroke="#1a2535" stroke-width="1"/>
+      <line x1="200" y1="134" x2="540" y2="134" stroke="#1a2535" stroke-width="1"/>
+      <!-- Vertical dividers (unit separators) -->
+      <line x1="285" y1="40" x2="285" y2="188" stroke="#151d2a" stroke-width="1"/>
+      <line x1="370" y1="40" x2="370" y2="188" stroke="#151d2a" stroke-width="1"/>
+      <line x1="455" y1="40" x2="455" y2="188" stroke="#151d2a" stroke-width="1"/>
+      <!-- FLOOR LABELS -->
+      <text x="185" y="68" text-anchor="end" font-family="monospace" font-size="8" fill="#2a3a4a">4F</text>
+      <text x="185" y="115" text-anchor="end" font-family="monospace" font-size="8" fill="#2a3a4a">3F</text>
+      <text x="185" y="162" text-anchor="end" font-family="monospace" font-size="8" fill="#2a3a4a">2F</text>
+      <text x="185" y="183" text-anchor="end" font-family="monospace" font-size="8" fill="#2a3a4a">1F</text>
+      <!-- Windows floor 4 (top) -->
+      <rect x="215" y="52" width="50" height="26" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="300" y="52" width="50" height="26" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="385" y="52" width="50" height="26" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="470" y="52" width="50" height="26" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <!-- Windows floor 3 -->
+      <rect x="215" y="99" width="50" height="26" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="300" y="99" width="50" height="26" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="385" y="99" width="50" height="26" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <!-- UNIT 002 window — LIT (suspect on floor 3 right) -->
+      <rect x="470" y="99" width="50" height="26" rx="1" fill="#1a2e18" stroke="#2a6a30" stroke-width="1.5"/>
+      <rect x="478" y="103" width="34" height="18" rx="1" fill="#1e3820" opacity="0.6"/>
+      <!-- Windows floor 2 (ground floor visible) -->
+      <rect x="215" y="146" width="50" height="28" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="300" y="146" width="50" height="28" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="385" y="146" width="50" height="28" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <rect x="470" y="146" width="50" height="28" rx="1" fill="#0d1520" stroke="#1e2d40" stroke-width="1"/>
+      <!-- FRONT DOOR / SHARED ENTRANCE -->
+      <rect x="325" y="162" width="42" height="26" rx="1" fill="#0c1828" stroke="#2a4a6a" stroke-width="2"/>
+      <circle cx="362" cy="177" r="3" fill="#2a5080"/>
+      <!-- Entry annotation -->
+      <line x1="346" y1="188" x2="346" y2="210" stroke="#2a88f0" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="290" y="210" width="112" height="22" rx="2" fill="#0d1828" stroke="#2a88f0" stroke-width="1"/>
+      <text x="346" y="225" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a88f0" letter-spacing="1">ENTRY POINT</text>
+      <!-- REAR COURTYARD -->
+      <rect x="540" y="40" width="100" height="148" rx="2" fill="#0e1118" stroke="#242e3a" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <text x="590" y="110" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a3848">REAR</text>
+      <text x="590" y="122" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a3848">COURT</text>
+      <text x="590" y="134" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a3848">YARD</text>
+      <!-- Rear door from unit to courtyard -->
+      <rect x="538" y="125" width="4" height="20" fill="#1a3a5a" stroke="#2a5a8a" stroke-width="1"/>
+      <line x1="560" y1="135" x2="538" y2="135" stroke="#2a5a8a" stroke-width="1" stroke-dasharray="3,2"/>
+      <!-- FLIGHT ROUTE from courtyard -->
+      <path d="M640 80 Q680 60 720 50 L730 50" stroke="#c03020" stroke-width="2" stroke-dasharray="6,3" fill="none" marker-end="url(#arr-red)"/>
+      <rect x="620" y="50" width="100" height="20" rx="2" fill="#200808" stroke="#c03020" stroke-width="1"/>
+      <text x="670" y="64" text-anchor="middle" font-family="monospace" font-size="8" fill="#c03020" letter-spacing="1">FLIGHT ROUTE</text>
+      <!-- SUSPECT location marker -->
+      <circle cx="495" cy="112" r="12" fill="#1a2e18" stroke="#22a060" stroke-width="2"/>
+      <text x="495" y="117" text-anchor="middle" font-family="monospace" font-size="11" fill="#22a060" font-weight="bold">S1</text>
+      <!-- Suspect label -->
+      <line x1="507" y1="106" x2="550" y2="90" stroke="#22a060" stroke-width="1" stroke-dasharray="2,2"/>
+      <rect x="548" y="78" width="128" height="22" rx="2" fill="#0c1c0c" stroke="#22a060" stroke-width="1"/>
+      <text x="612" y="93" text-anchor="middle" font-family="monospace" font-size="9" fill="#22a060">S1 VERHOEVEN — UNIT 002</text>
+      <!-- STAGING AREA arrow -->
+      <path d="M150 285 L200 216" stroke="#1a7040" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-grn)"/>
+      <rect x="22" y="310" width="126" height="32" rx="2" fill="#0a150a" stroke="#1a7040" stroke-width="1"/>
+      <text x="85" y="324" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a7040" letter-spacing="1">▶ STAGING AREA</text>
+      <text x="85" y="337" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a5030">80M SOUTH — ON FOOT</text>
+      <!-- APPROACH PATH -->
+      <path d="M165 204 L200 204" stroke="#2a88f0" stroke-width="2" fill="none" marker-end="url(#arr-blu)"/>
+      <rect x="22" y="190" width="140" height="18" rx="2" fill="#080d18" stroke="#1a3a6a" stroke-width="1"/>
+      <text x="92" y="203" text-anchor="middle" font-family="monospace" font-size="8" fill="#2a6aaa" letter-spacing="1">APPROACH — ON FOOT →</text>
+      <!-- CCTV sightline from building front window -->
+      <path d="M220 168 L180 204" stroke="#c08020" stroke-width="1" stroke-dasharray="4,3" fill="none"/>
+      <path d="M220 168 L180 240" stroke="#c08020" stroke-width="1" stroke-dasharray="4,3" fill="none"/>
+      <polygon points="220,168 180,204 180,240" fill="#c08020" opacity="0.06"/>
+      <rect x="22" y="350" width="140" height="18" rx="2" fill="#120e04" stroke="#c08020" stroke-width="1"/>
+      <text x="92" y="363" text-anchor="middle" font-family="monospace" font-size="8" fill="#c08020" letter-spacing="1">⚠ SIGHTLINE — FRONT WIN</text>
+      <!-- BMW parked -->
+      <rect x="220" y="208" width="55" height="22" rx="2" fill="#111a28" stroke="#2a3a50" stroke-width="1"/>
+      <rect x="232" y="212" width="26" height="10" rx="1" fill="#0d1420"/>
+      <text x="247" y="238" text-anchor="middle" font-family="monospace" font-size="8" fill="#2a3a50">ZN-486-H</text>
+      <!-- Scale bar -->
+      <line x1="620" y1="400" x2="720" y2="400" stroke="#2a3848" stroke-width="1"/>
+      <line x1="620" y1="396" x2="620" y2="404" stroke="#2a3848" stroke-width="1"/>
+      <line x1="720" y1="396" x2="720" y2="404" stroke="#2a3848" stroke-width="1"/>
+      <text x="670" y="413" text-anchor="middle" font-family="monospace" font-size="8" fill="#2a3848">≈ 40m</text>
+      <!-- Compass -->
+      <text x="718" y="48" text-anchor="middle" font-family="monospace" font-size="18" fill="#2a3848">N</text>
+      <line x1="718" y1="52" x2="718" y2="65" stroke="#2a3848" stroke-width="1.5"/>
+      <polygon points="714,65 722,65 718,52" fill="#2a3848" opacity="0.5"/>
+      <!-- corner brackets -->
+      <path d="M4 4 L4 16 M4 4 L16 4" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <path d="M756 4 L756 16 M756 4 L744 4" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <path d="M4 416 L4 404 M4 416 L16 416" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <path d="M756 416 L756 404 M756 416 L744 416" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <text x="14" y="412" font-family="monospace" font-size="8" fill="#2a3848" letter-spacing="1.5">KRONENBURGSINGEL 2 — ARNHEM — TACTICAL FLOORPLAN</text>
+      <circle cx="742" cy="10" r="4" fill="#c03020" opacity=".7"/>
+      <text x="728" y="8" text-anchor="end" font-family="monospace" font-size="8" fill="#501808">● REC</text>
+      <!-- Arrow marker defs -->
+      <defs>
+        <marker id="arr-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#c03020"/>
+        </marker>
+        <marker id="arr-blu" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#2a88f0"/>
+        </marker>
+        <marker id="arr-grn" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#1a7040"/>
+        </marker>
+        <marker id="arr-amb" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#c08020"/>
+        </marker>
+      </defs>
+    </svg>
+    <!-- Legend -->
+    <div class="map-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#22a060"></div>SUSPECT LOCATION</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#2a88f0"></div>ENTRY POINT</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c03020"></div>FLIGHT ROUTE</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c08020"></div>SIGHTLINE / CCTV</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#1a7040"></div>STAGING AREA</div>
+    </div>
+    <div class="addr-bar">
+      <span class="addr">Kronenburgsingel 2, 6831 GM Arnhem</span>
+      <span class="coords">51.9847° N, 5.9137° E</span>
+    </div>
+    <div class="card"><div class="detail-label" style="color:var(--accent)">→ APPROACH ROUTE</div><p class="detail-text">Stage in Kronenburgpark (80m south). Approach on foot via Kronenburgsingel from east. No vehicle approach — block is overlooked from upper floors. Confirm unit: rear ground-floor buzzer 002.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--amber)">⬛ BREACH POINT(S)</div><p class="detail-text">Front shared entrance (intercom — force if no response). Rear courtyard accessible via alley off Schelmseweg — seal to prevent flight.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--red)">⚠ FLIGHT RISK ROUTES</div><p class="detail-text">Rear courtyard exit to Schelmseweg. Ground-floor window faces courtyard. Position one officer at alley mouth before breach.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--amber)">👁 SUSPECT VISIBILITY</div><p class="detail-text">Suspect can observe Kronenburgsingel from front window. Do not approach in marked vehicles. Approach from east on foot only.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--green)">◈ STAGING AREA</div><p class="detail-text">Kronenburgpark — parking area 80m south. Non-marked vehicles only.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--muted)">ℹ NOTES</div><p class="detail-text">Residential block has 3 other apartments. Minimise noise. Advise neighbours via intercom AFTER suspect is secured. No children registered at this address.</p></div>
+  </div>
+
+  <!-- ── LOC 1: WAREHOUSE ── -->
+  <div id="loc-panel-1" style="display:none">
+    <svg class="scene" viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg">
+      <rect width="760" height="420" fill="#0a0d12"/>
+      <!-- Ground / surroundings -->
+      <rect x="0" y="0" width="760" height="420" fill="#0c0f14"/>
+      <!-- IJssel river -->
+      <path d="M0 340 Q100 320 200 330 Q350 345 500 330 Q620 318 760 328 L760 420 L0 420 Z" fill="#0a1018"/>
+      <path d="M0 352 Q150 338 300 346 Q450 354 600 342 Q680 336 760 340" stroke="#101c28" stroke-width="1.5" fill="none"/>
+      <text x="400" y="385" text-anchor="middle" font-family="monospace" font-size="9" fill="#101c2a" letter-spacing="3">RIVIER DE IJSSEL</text>
+      <!-- Access road -->
+      <rect x="0" y="220" width="760" height="28" fill="#0e1118"/>
+      <rect x="260" y="226" width="60" height="5" rx="2" fill="#181e28"/>
+      <rect x="380" y="226" width="60" height="5" rx="2" fill="#181e28"/>
+      <text x="380" y="260" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a2030" letter-spacing="2">WESTERVOORTSEDIJK ACCESS ROAD</text>
+      <!-- Service road north -->
+      <rect x="0" y="30" width="760" height="20" fill="#0d1016" opacity="0.7"/>
+      <text x="380" y="25" text-anchor="middle" font-family="monospace" font-size="8" fill="#1a2030" letter-spacing="1">SERVICE ROAD (NORTH — BLIND APPROACH)</text>
+      <!-- WAREHOUSE UNIT 14 — main body -->
+      <rect x="160" y="60" width="380" height="155" rx="2" fill="#0f1720" stroke="#2a3848" stroke-width="2"/>
+      <!-- Roof ridge line -->
+      <line x1="160" y1="90" x2="540" y2="90" stroke="#1a2535" stroke-width="1"/>
+      <!-- Interior walls -->
+      <line x1="360" y1="90" x2="360" y2="215" stroke="#1a2535" stroke-width="1"/>
+      <text x="260" y="160" text-anchor="middle" font-family="monospace" font-size="9" fill="#1e2e40">STORAGE AREA</text>
+      <text x="450" y="140" text-anchor="middle" font-family="monospace" font-size="9" fill="#1e2e40">OFFICE / PREP</text>
+      <!-- ROLLER DOOR 1 -->
+      <rect x="180" y="198" width="90" height="17" rx="1" fill="#0c1420" stroke="#2a88f0" stroke-width="2"/>
+      <line x1="180" y1="204" x2="270" y2="204" stroke="#1a2a3a" stroke-width="1"/>
+      <line x1="180" y1="209" x2="270" y2="209" stroke="#1a2a3a" stroke-width="1"/>
+      <!-- Roller door label -->
+      <line x1="225" y1="215" x2="225" y2="238" stroke="#2a88f0" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="162" y="238" width="126" height="20" rx="2" fill="#0d1828" stroke="#2a88f0" stroke-width="1"/>
+      <text x="225" y="252" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a88f0">ENTRY — ROLLER DOOR 1</text>
+      <!-- ROLLER DOOR 2 -->
+      <rect x="310" y="198" width="90" height="17" rx="1" fill="#0c1420" stroke="#2a88f0" stroke-width="2"/>
+      <line x1="310" y1="204" x2="400" y2="204" stroke="#1a2a3a" stroke-width="1"/>
+      <line x1="310" y1="209" x2="400" y2="209" stroke="#1a2a3a" stroke-width="1"/>
+      <line x1="355" y1="215" x2="355" y2="236" stroke="#2a88f0" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="292" y="236" width="126" height="20" rx="2" fill="#0d1828" stroke="#2a88f0" stroke-width="1"/>
+      <text x="355" y="250" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a88f0">ENTRY — ROLLER DOOR 2</text>
+      <!-- PERSONNEL DOOR (east) -->
+      <rect x="536" y="120" width="8" height="34" rx="1" fill="#0c1828" stroke="#2a88f0" stroke-width="2"/>
+      <line x1="544" y1="137" x2="580" y2="137" stroke="#2a88f0" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <rect x="580" y="125" width="128" height="20" rx="2" fill="#0d1828" stroke="#2a88f0" stroke-width="1"/>
+      <text x="644" y="139" text-anchor="middle" font-family="monospace" font-size="9" fill="#2a88f0">ENTRY — PERSONNEL DOOR</text>
+      <!-- CCTV camera -->
+      <rect x="520" y="64" width="16" height="10" rx="2" fill="#0e1e2e" stroke="#c08020" stroke-width="1.5"/>
+      <line x1="536" y1="69" x2="552" y2="72" stroke="#c08020" stroke-width="1"/>
+      <!-- CCTV cone -->
+      <polygon points="536,64 536,80 660,30 660,110" fill="#c08020" opacity="0.04"/>
+      <line x1="552" y1="30" x2="660" y2="20" stroke="#c08020" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="552" y1="110" x2="660" y2="120" stroke="#c08020" stroke-opacity="0.25" stroke-width="1" stroke-dasharray="4,3"/>
+      <rect x="580" y="95" width="120" height="18" rx="2" fill="#120e04" stroke="#c08020" stroke-width="1"/>
+      <text x="640" y="108" text-anchor="middle" font-family="monospace" font-size="8" fill="#c08020">⚠ CCTV — 60M RANGE</text>
+      <!-- Adjacent units -->
+      <rect x="40" y="60" width="110" height="155" rx="2" fill="#0d1420" stroke="#1e2a38" stroke-width="1"/>
+      <text x="95" y="138" text-anchor="middle" font-family="monospace" font-size="8" fill="#1e2a38">UNIT 13</text>
+      <text x="95" y="150" text-anchor="middle" font-family="monospace" font-size="8" fill="#1e2a38">(METALWORKS)</text>
+      <rect x="550" y="60" width="110" height="155" rx="2" fill="#0d1420" stroke="#1e2a38" stroke-width="1"/>
+      <text x="605" y="138" text-anchor="middle" font-family="monospace" font-size="8" fill="#1e2a38">UNIT 15</text>
+      <text x="605" y="150" text-anchor="middle" font-family="monospace" font-size="8" fill="#1e2a38">(LOGISTICS)</text>
+      <!-- SUSPECT location -->
+      <circle cx="440" cy="152" r="14" fill="#1a2e18" stroke="#22a060" stroke-width="2"/>
+      <text x="440" y="157" text-anchor="middle" font-family="monospace" font-size="12" fill="#22a060" font-weight="bold">S2</text>
+      <!-- Suspect label -->
+      <line x1="454" y1="145" x2="490" y2="118" stroke="#22a060" stroke-width="1" stroke-dasharray="2,2"/>
+      <rect x="486" y="105" width="148" height="20" rx="2" fill="#0c1c0c" stroke="#22a060" stroke-width="1"/>
+      <text x="560" y="119" text-anchor="middle" font-family="monospace" font-size="9" fill="#22a060">S2 HOUBEN — OFFICE AREA</text>
+      <!-- VW Transporter parked inside -->
+      <rect x="185" y="100" width="70" height="30" rx="2" fill="#101820" stroke="#1e2e40" stroke-width="1"/>
+      <rect x="200" y="105" width="30" height="14" rx="1" fill="#0c1420"/>
+      <text x="220" y="142" text-anchor="middle" font-family="monospace" font-size="8" fill="#1e3050">GH-214-R</text>
+      <!-- FLIGHT ROUTE — rear to river -->
+      <path d="M350 215 L350 340" stroke="#c03020" stroke-width="2.5" stroke-dasharray="7,4" fill="none" marker-end="url(#arr-red2)"/>
+      <rect x="268" y="278" width="164" height="20" rx="2" fill="#200808" stroke="#c03020" stroke-width="1"/>
+      <text x="350" y="292" text-anchor="middle" font-family="monospace" font-size="9" fill="#c03020" letter-spacing="1">⚠ FLIGHT ROUTE → RIVER</text>
+      <!-- STAGING AREA -->
+      <rect x="4" y="268" width="130" height="60" rx="3" fill="#0a150a" stroke="#1a4a1a" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="69" y="293" text-anchor="middle" font-family="monospace" font-size="9" fill="#1a4a1a" letter-spacing="1">STAGING AREA</text>
+      <text x="69" y="307" text-anchor="middle" font-family="monospace" font-size="8" fill="#123012">LORENTZ 3 · 150M NW</text>
+      <text x="69" y="320" text-anchor="middle" font-family="monospace" font-size="8" fill="#0f2010">3 VEHICLES MAX</text>
+      <!-- Approach arrow from staging -->
+      <path d="M134 295 L162 195" stroke="#1a7040" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arr-grn2)"/>
+      <!-- Cut-off vehicle position -->
+      <rect x="610" y="225" width="110" height="22" rx="2" fill="#1a0808" stroke="#c03020" stroke-width="1"/>
+      <text x="665" y="236" text-anchor="middle" font-family="monospace" font-size="8" fill="#c03020" letter-spacing="1">CUT-OFF VEHICLE</text>
+      <text x="665" y="246" text-anchor="middle" font-family="monospace" font-size="7" fill="#601010">PRE-POSITION SOUTH</text>
+      <path d="M610 237 L545 237" stroke="#c03020" stroke-width="1" stroke-dasharray="4,3" fill="none" marker-end="url(#arr-red2)"/>
+      <!-- Scale bar -->
+      <line x1="620" y1="400" x2="720" y2="400" stroke="#2a3848" stroke-width="1"/>
+      <line x1="620" y1="396" x2="620" y2="404" stroke="#2a3848" stroke-width="1"/>
+      <line x1="720" y1="396" x2="720" y2="404" stroke="#2a3848" stroke-width="1"/>
+      <text x="670" y="413" text-anchor="middle" font-family="monospace" font-size="8" fill="#2a3848">≈ 50m</text>
+      <!-- Compass -->
+      <text x="718" y="48" text-anchor="middle" font-family="monospace" font-size="18" fill="#2a3848">N</text>
+      <line x1="718" y1="52" x2="718" y2="65" stroke="#2a3848" stroke-width="1.5"/>
+      <polygon points="714,65 722,65 718,52" fill="#2a3848" opacity="0.5"/>
+      <!-- corner brackets -->
+      <path d="M4 4 L4 16 M4 4 L16 4" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <path d="M756 4 L756 16 M756 4 L744 4" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <path d="M4 416 L4 404 M4 416 L16 416" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <path d="M756 416 L756 404 M756 416 L744 416" stroke="#2a3848" stroke-width="1.5" fill="none"/>
+      <text x="14" y="412" font-family="monospace" font-size="8" fill="#2a3848" letter-spacing="1.5">WESTERVOORTSEDIJK 73 — LORENTZ BEDRIJVENPARK — TACTICAL FLOORPLAN</text>
+      <circle cx="742" cy="10" r="4" fill="#c03020" opacity=".7"/>
+      <text x="728" y="8" text-anchor="end" font-family="monospace" font-size="8" fill="#501808">● REC</text>
+      <defs>
+        <marker id="arr-red2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#c03020"/></marker>
+        <marker id="arr-grn2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#1a7040"/></marker>
+      </defs>
+    </svg>
+    <div class="map-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#22a060"></div>SUSPECT LOCATION</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#2a88f0"></div>ENTRY POINTS</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c03020"></div>FLIGHT ROUTE</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c08020"></div>CCTV COVERAGE</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#1a7040"></div>STAGING AREA</div>
+    </div>
+    <div class="addr-bar">
+      <span class="addr">Westervoortsedijk 73 Unit 14, 6827 AT Arnhem</span>
+      <span class="coords">51.9972° N, 5.9281° E</span>
+    </div>
+    <div class="card"><div class="detail-label" style="color:var(--accent)">→ APPROACH ROUTE</div><p class="detail-text">Stage at Lorentz 3 carpark (150m NW). Approach via service road on north side — avoids CCTV camera facing main access road. Disable or obscure CCTV before final 30m advance. Radio silence from T-2 minutes.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--amber)">⬛ BREACH POINT(S)</div><p class="detail-text">Main roller doors (hydraulic — use ram or request opener unit). Personnel side door (east face) — pick or ram. All three points assigned to separate sub-elements; simultaneous breach.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--red)">⚠ FLIGHT RISK ROUTES</div><p class="detail-text">Rear access road along the IJssel riverbank. River immediately behind — no bridge within 300m. Cut-off vehicle must be pre-positioned on Westervoortsedijk south before H-Hour.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--amber)">👁 SUSPECT VISIBILITY</div><p class="detail-text">CCTV on access road gives 60m early warning. Approach on foot from staging. Confirm roller doors closed before breach — open doors indicate suspect is mobile.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--green)">◈ STAGING AREA</div><p class="detail-text">Lorentz 3 carpark, Westervoortsedijk 55 (150m NW). Out of CCTV view. Maximum 3 vehicles.</p></div>
+    <div class="card"><div class="detail-label" style="color:var(--muted)">ℹ NOTES</div><p class="detail-text">Adjacent units 13 and 15 close at 17:30. Confirm Unit 14 only for breach. Heavy goods vehicles may be parked in yard — use as cover on approach.</p></div>
+  </div>
+</div>
+
+<!-- ── SURVEILLANCE ── -->
+<div id="panel-surveillance" class="panel">
+  <div class="surv-label">Surveillance assets — Operation Atlas</div>
+  <div class="surv-sub">All feeds routed to TOC. Visual confirmation required before H-HOUR.</div>
+  <div class="surv-grid">
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">ALPHA — RESIDENTIAL — FRONT APPROACH</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">ALPHA — REAR COURTYARD</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">ALPHA — UNIT 002 ENTRANCE</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">BRAVO — ACCESS ROAD CCTV (INTERCEPTED)</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">BRAVO — WAREHOUSE EXTERIOR</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">BRAVO — VEHICLE YARD</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">VEHICLE TRACK — ZN-486-H (BMW)</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+    <div class="surv-feed"><div class="surv-nofeed">[NO LIVE FEED]</div><div class="surv-feedlabel">VEHICLE TRACK — GH-214-R (VW)</div><div class="surv-rec">● REC</div><div class="surv-ts">04.04 · 19:00:00</div></div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sb-title">Objectives</div>
+  <div class="sb-divider"></div>
+  <div class="sb-badge-row">
+    <div class="sb-badge">Operation Atlas</div>
+    <div class="sb-count" id="obj-count">0/7</div>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="obj-progress" style="width:0%"></div></div>
+
+  <!-- PRIMARY -->
+  <div class="obj-section-head">▸ PRIMARY</div>
+
+  <div class="obj-item" onclick="toggleObj(this)">
+    <div class="obj-inner">
+      <div class="obj-stripe primary"></div>
+      <div class="obj-body">
+        <div class="obj-type primary">PRIMARY OBJECTIVE</div>
+        <div class="obj-title">Bring Order to Chaos</div>
+        <div class="obj-desc">Arrest or neutralize any armed contact at the scene.</div>
+      </div>
+      <div class="obj-check">○</div>
+    </div>
+  </div>
+
+  <div class="obj-item" onclick="toggleObj(this)">
+    <div class="obj-inner">
+      <div class="obj-stripe primary"></div>
+      <div class="obj-body">
+        <div class="obj-type primary">PRIMARY OBJECTIVE</div>
+        <div class="obj-title">Rescue All of the Civilians</div>
+        <div class="obj-desc">Detain any unarmed contacts found at the scene.</div>
+      </div>
+      <div class="obj-check">○</div>
+    </div>
+  </div>
+
+  <!-- SECONDARY -->
+  <div class="obj-section-head">▸ SECONDARY</div>
+
+  <div class="obj-item" onclick="toggleObj(this)">
+    <div class="obj-inner">
+      <div class="obj-stripe secondary"></div>
+      <div class="obj-body">
+        <div class="obj-type secondary">SECONDARY OBJECTIVE</div>
+        <div class="obj-title">Secure the Suspects</div>
+        <div class="obj-desc">Detain Verhoeven &amp; Houben alive. No officer-involved fatalities.</div>
+      </div>
+      <div class="obj-check">○</div>
+    </div>
+  </div>
+
+  <div class="obj-item" onclick="toggleObj(this)">
+    <div class="obj-inner">
+      <div class="obj-stripe secondary"></div>
+      <div class="obj-body">
+        <div class="obj-type secondary">SECONDARY OBJECTIVE</div>
+        <div class="obj-title">Seize All Evidence</div>
+        <div class="obj-desc">Bag &amp; tag narcotics, packaging, cash, phones and ledgers.</div>
+      </div>
+      <div class="obj-check">○</div>
+    </div>
+  </div>
+
+  <div class="obj-item" onclick="toggleObj(this)">
+    <div class="obj-inner">
+      <div class="obj-stripe secondary"></div>
+      <div class="obj-body">
+        <div class="obj-type secondary">SECONDARY OBJECTIVE</div>
+        <div class="obj-title">Neutralize the CCTV</div>
+        <div class="obj-desc">Disable warehouse camera before final 30m approach on BRAVO.</div>
+      </div>
+      <div class="obj-check">○</div>
+    </div>
+  </div>
+
+  <!-- BONUS -->
+  <div class="obj-section-head">▸ BONUS</div>
+
+  <div class="obj-item" onclick="toggleObj(this)">
+    <div class="obj-inner">
+      <div class="obj-stripe bonus"></div>
+      <div class="obj-body">
+        <div class="obj-type bonus">BONUS OBJECTIVE</div>
+        <div class="obj-title">No Shots Fired</div>
+        <div class="obj-desc">Complete both entries without discharging a firearm.</div>
+      </div>
+      <div class="obj-check">○</div>
+    </div>
+  </div>
+
+  <div class="obj-item" onclick="toggleObj(this)">
+    <div class="obj-inner">
+      <div class="obj-stripe bonus"></div>
+      <div class="obj-body">
+        <div class="obj-type bonus">BONUS OBJECTIVE</div>
+        <div class="obj-title">Simultaneous Breach</div>
+        <div class="obj-desc">Both teams breach within 5 seconds of each other at H-Hour.</div>
+      </div>
+      <div class="obj-check">○</div>
+    </div>
+  </div>
+
+  <div class="sb-hr" style="margin-top:14px"></div>
+  <div class="sb-meta">
+    <div class="sb-meta-row"><span>TYPE:</span><span class="sb-meta-val">NARCOTICS ENTRY</span></div>
+    <div class="sb-meta-row"><span>DATE:</span><span class="sb-meta-val">04 APR 2025</span></div>
+    <div class="sb-meta-row"><span>H-HOUR:</span><span class="sb-meta-val">19:00</span></div>
+    <div class="sb-meta-row"><span>LOCATIONS:</span><span class="sb-meta-val">2 SIMULTANEOUS</span></div>
+    <div class="sb-meta-row"><span>SUSPECTS:</span><span class="sb-meta-val">2 CONFIRMED</span></div>
+    <div class="sb-meta-row"><span>TEAMS:</span><span class="sb-meta-val">ALPHA + BRAVO</span></div>
+    <div class="sb-meta-row"><span>STATUS:</span><span class="sb-meta-val">BRIEFING</span></div>
+  </div>
+
+  <div class="warn-box" style="background:var(--redDim);border:1px solid var(--red)">
+    <div class="warn-head" style="color:var(--red)">⚠ ARMED SUSPECT</div>
+    <div class="warn-text" style="color:var(--red);opacity:.7">SVEN HOUBEN — prior Glock 17 arrest. TEAM BRAVO: treat as armed until secured and searched.</div>
+  </div>
+  <div class="warn-box" style="background:var(--accentDim);border:1px solid var(--accent)">
+    <div class="warn-head" style="color:var(--accentBr)">RADIO PROTOCOL</div>
+    <div class="warn-text" style="color:var(--accent)">SILENCE from T-2 min. Confirm "GROEN" in position. IC broadcasts H-HOUR. Both teams breach on IC mark.</div>
+  </div>
+</div><!-- /sidebar -->
+
+</div><!-- /body -->
+
+<!-- ══ FOOTER ══ -->
+<div class="footer">
+  <div class="footer-dept">POLITIE EENHEID OOST-NEDERLAND — TGO NARCOTICA</div>
+  <div class="footer-class">POLICE SENSITIVE — NOT FOR DISTRIBUTION</div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+const TOTAL = 7;
+
+function showTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function showLoc(idx) {
+  document.getElementById('loc-panel-0').style.display = idx === 0 ? 'block' : 'none';
+  document.getElementById('loc-panel-1').style.display = idx === 1 ? 'block' : 'none';
+  document.getElementById('locbtn-0').classList.toggle('active', idx === 0);
+  document.getElementById('locbtn-1').classList.toggle('active', idx === 1);
+}
+
+function toggleObj(item) {
+  const inner  = item.querySelector('.obj-inner');
+  const stripe = item.querySelector('.obj-stripe');
+  const title  = item.querySelector('.obj-title');
+  const check  = item.querySelector('.obj-check');
+  const done   = check.classList.toggle('done');
+  title.classList.toggle('done', done);
+  stripe.classList.toggle('done-stripe', done);
+  check.textContent = done ? '✓' : '○';
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = document.querySelectorAll('.obj-check.done').length;
+  document.getElementById('obj-count').textContent = done + '/' + TOTAL;
+  document.getElementById('obj-progress').style.width = (done / TOTAL * 100) + '%';
+}
+
+function toggleTheme() {
+  const html  = document.documentElement;
+  const light = html.getAttribute('data-theme') === 'light';
+  html.setAttribute('data-theme', light ? 'dark' : 'light');
+  document.getElementById('theme-icon').textContent  = light ? '☀' : '🌙';
+  document.getElementById('theme-label').textContent = light ? 'LIGHT MODE' : 'DARK MODE';
+}
+</script>
+</body>
+</html>
